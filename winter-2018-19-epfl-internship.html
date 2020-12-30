@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Winter 2018-19 EPFL internship</title>
+<meta name="description" content="Background on the group and its workDuring November 2018 – February 2019 I was lucky enough to work at EPFL’s Laboratory of Computational Science and Modelin...">
+
+<link rel="stylesheet" href="/css/main.css">
+<link rel="canonical" href="/winter-2018-19-epfl-internship">
+<link rel="alternate" type="application/rss+xml" title="" href="/feed.xml" />
+
+<script type="text/javascript">
+document.addEventListener('DOMContentLoaded', function(){
+  document.querySelectorAll("script[type='math/tex']").forEach(function(el){
+    el.outerHTML = "\\(" + el.textContent + "\\)";
+  });
+  document.querySelectorAll("script[type='math/tex; mode=display']").forEach(function(el){
+    el.outerHTML = "\\[" + el.textContent + "\\]";
+  });
+  var script = document.createElement('script');
+  script.src = "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js";
+  document.head.appendChild(script);
+}, false);
+</script>
+
+</head>
+<body>
+  <header class="site-header">
+  <div class="container">
+    <input type="checkbox" id="toggleNavbar">
+    <h1 class="logo"><a href="/">sebg<span>.io</span></a></h1>
+    <label for="toggleNavbar" role="button" class="toggle-navbar-button">
+      <i class="icon icon-menu"></i>
+      <i class="icon icon-cross"></i>
+    </label>
+    <nav class="navbar">
+      <ul>
+        <li><a href="/" title="Home">Home</a></li>
+        
+          <li><a href="/about" title="About">About</a></li>
+        
+          <li><a href="/blog" title="Blog">Blog</a></li>
+        
+        <li><a href="/feed.xml" target="_blank"><i class="icon icon-rfeed"></i></a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+
+<main class="main-container">
+  <div class="container">
+    <article role="article" class="post">
+
+  <div class="card">
+    <header class="post-header">
+      <h1 class="post-title">Winter 2018-19 EPFL internship</h1>
+      <em class="post-meta">
+        <time>Dec 7, 2020</time>
+      </em>
+    </header>
+
+    <div class="post-content">
+      
+        <figure class="post-thumbnail ">
+          <img src="../images/posts/COSMO/cosmo_logo.png" alt="Winter 2018-19 EPFL internship">
+        </figure>
+      
+      <h2 id="background-on-the-group-and-its-work">Background on the group and its work</h2>
+<p>During November 2018 – February 2019 I was lucky enough to work at EPFL’s <a href="https://www.epfl.ch/labs/cosmo/">Laboratory of Computational Science and Modeling (COSMO)</a> laboratory as a research intern. To begin I would like to thank the group head Michele Ceriotti for taking a chance on me – it was a transformative experience. I would also like to thank Michael Willatt and Félix Musil for guiding me through the internship and helping me get up to speed with all there was to know.</p>
+
+<p>The group develops simulation techniques at the atomic level to predict the properties of materials. The application that I worked on was utilising machine learning techniques for atomic energy prediction, rather than more traditional <a href="https://en.wikipedia.org/wiki/Density_functional_theory">Density-functional theory (DFT)</a> techniques. If you are interested by this I recommend applying to the group; aside from the fascinating work, they are wonderful people who made it a pleasure to come to the office each day.</p>
+
+<p>This post aims to explain what I did during my internship in a non-rigorous way accessible to those with a basic level of chemistry and physics knowledge.</p>
+
+<h2 id="what-i-did">What I did</h2>
+<p>For the technical details and outcomes of my experiment, refer to the <a href="blog/COSMOpres.pdf">slides from my final presentation</a>.</p>
+
+<p>The overall goal of my internship was to examine and quantify the difference of the predictive power between the ANI1 and QM9 data sets.</p>
+
+<h3 id="what-ani1-and-qm9-are">What ANI1 and QM9 are</h3>
+<p>Advancements in DFT and computational power has meant that the configuration of molecules can now be predicted from a collection of their atoms. Two datasets produced from this research are ANI1 and QM9. Both begin with the <a href="https://www.gdb.unibe.ch/downloads/">GDB-11</a> dataset which “enumerates small organic molecules up to 11 atoms of C, N, O and F following simple chemical stability and synthetic feasibility rules.”</p>
+
+<p>Glossary:<br />
+<strong>Isomer</strong>: a configuration of a molecule. Two isomers contain the same atoms, but have different structure through bonds and geometry.<br />
+<strong>Conformer</strong>: An energetic configuration of an isomer. Adding this thermal energy to a molecule causes the atoms to be in slightly different positions to the energetic minimum. Hence conformers are perturbations in the shape of an isomer.</p>
+
+<p>The data sets:</p>
+
+<ul>
+  <li>QM9 is a data set of 133,385 molecules (many being isomers for the same number of atoms). These were constructed by selection of the molecules composed of up to 9 atoms chosen from C,N,O,F from GDB-11 and then relaxed to their lowest energy state.</li>
+  <li>ANI1 is a data set of 22,057,374 conformers. First molecules of up to 8 atoms containing C,N,O were selected from GDB-11, which resulted in 57,462 molecules (each being a unique isomer). These were relaxed to find their energetically minimised geometry. Then for each molecule, the atoms were perturbed thermally using normal mode sampling, creating a set of conformers for each molecule.</li>
+</ul>
+
+<h3 id="predicting-formation-energies">Predicting formation energies</h3>
+<p>To begin, my goal was to write a program that could take the structure of a molecule and predict its relaxed energy. The traditional way of doing this is using DFT, which is very computationally expensive. Machine learning offers methods that are far less computationally intensive.</p>
+
+<p>At the most general level, there are three steps to the process.</p>
+
+<ol>
+  <li>Representing a molecule in a mathematically useful way (using SOAP).</li>
+  <li>Create a metric to measure the similarity between a test molecule and the molecules in the training set (creating Kernels).</li>
+  <li>Using these kernels and the information we have “learned” from the training set to make a prediction (multiplying kernels by <script type="math/tex">\boldsymbol{x}</script>).</li>
+</ol>
+
+<p><img src="../images/posts/COSMO/process.dot.svg" alt="Process Flowchart" /></p>
+
+<p>A thorough description of this process can be found in the paper <a href="https://arxiv.org/abs/1901.10971">Machine-learning of atomic-scale properties based on physical principles</a> authored by Michele, Michael and Gábor Csányi (who pioneered SOAP).</p>
+<h3 id="soap">SOAP</h3>
+<p>Consider a molecule –  it can be described by a chemical formula, a SMILES, or any number of other ways. The most informative description that QM9 and ANI1 gives us is the position of each of the atoms (a 3 element vector per atom), and the goal is to predict the formation energy of this configuration.</p>
+
+<p>The first thing we need to do is represent this configuration in a more useful way. To do this, a technique called SOAP is used. Roughly speaking SOAP uses a spherical coordinate system centred on each atom to describe all the other atoms in the molecule. It outputs a vector whose length is determined by the precision of description desired, selected by altering the SOAP parameters – things like how many measurements are used in a rotational axis, how far apart each step of the the radial axis is measured etc.
+For each atom this SOAP vector is <script type="math/tex">\mathcal{X}</script>.</p>
+
+<h3 id="creating-kernels">Creating Kernels</h3>
+<p>Each atom has a SOAP descriptor, but the desire is to find the similarity between two molecules of a possibly differing numbers of atoms.</p>
+
+<p>Since SOAP describes a molecule by a set of vectors for each atom first a kernel between to atoms can be calculated by:</p>
+
+<script type="math/tex; mode=display">K^{(\nu)}_{(\zeta)}(\mathcal{X}_h,\mathcal{X}_x) =\Braket{\mathcal{X}^{(\nu)}_h|\mathcal{X}^{(\nu)}_x}_{(\zeta)} = \frac{\Braket{\mathcal{X}^{(\nu)}_h|\mathcal{X}^{(\nu)}_x}^{\zeta}}{\sqrt{\Braket{\mathcal{X}^{(\nu)}_h|\mathcal{X}^{(\nu)}_h}^{\zeta}\Braket{\mathcal{X}^{(\nu)}_x|\mathcal{X}^{(\nu)}_x}^{\zeta}}}</script>
+
+<p>where <script type="math/tex">\nu =1</script> preserves radial information, <script type="math/tex">\nu=2</script> preserves angular information.</p>
+
+<p>Next an important approximation is made – the formation energy of molecule is the sum of the energies of its atoms. This is a good example of needing to understand the underlying science to a dataset – without a knowledge of the physics, it would be unreasonable to make this assumption.</p>
+
+<p>Because of this <em>linear</em> relationship, instead of summing the contribution of each atom <strong>after</strong> applying learning (as kernel  <script type="math/tex">\times</script> learned value) once can instead use the mean of all the atomic kernels and simply multiply that by the known molecular energy. Hence the kernel between two molecules is:
+<script type="math/tex">K(\mathcal{A},\mathcal{B}) = \sum_{\alpha\in\mathcal{A}}\sum_{\beta\in\mathcal{B}}K(\mathcal{X}_\alpha,\mathcal{X}_\beta)/(n(\mathcal{A})n(\mathcal{B}))</script></p>
+
+<h3 id="using-the-learned-data">Using the learned data</h3>
+<p>For the training set <script type="math/tex">\mathcal{T}</script> of <script type="math/tex">n</script> molecules the above relationships can be characterised by the matrix equation
+<script type="math/tex">K_{\mathcal{T},\mathcal{T}}\boldsymbol{x} = E_{\mathcal{T}}</script>
+where <script type="math/tex">K_{\mathcal{T},\mathcal{T}}</script> is the <script type="math/tex">n \times n</script> matrix of molecular kernels, and <script type="math/tex">E_{\mathcal{T},\mathcal{T}}</script> is the <script type="math/tex">n \times 1</script> vector of molecular formation energies. Solving for <script type="math/tex">\boldsymbol{x}</script> is therefore the most time-consuming process – even with <script type="math/tex">K</script> being a relatively spare matrix, the sheer size makes it a lengthy process.</p>
+
+<p>This being a linear model no exact solution exists, so <a href="https://www.ics.uci.edu/~welling/classnotes/papers_class/Kernel-Ridge.pdf">Kernel Ridge Regression</a> is used.
+Once <script type="math/tex">\boldsymbol{x}</script> has been found, predictions for new molecule <script type="math/tex">\mathcal{A}</script> are a computationally simple process. First find the vector of molecular kernels between molecule <script type="math/tex">\mathcal{A}</script> and all the molecules in the training set <script type="math/tex">\mathcal{T}</script>: 
+<script type="math/tex">% <![CDATA[
+K_\mathcal{A,T} = \begin{bmatrix}
+K(\mathcal{A},\mathcal{T}_1) & K(\mathcal{A},\mathcal{T}_2) & \cdots & K(\mathcal{A},\mathcal{T}_n)
+\end{bmatrix} %]]></script>
+Multiplying gives the predicted energy.
+<script type="math/tex">\overbrace{K_\mathcal{A,T}}^{1 \times n}\ \times \overbrace{\boldsymbol{x}}^{n\times 1} = \hat{E}_\mathcal{A}</script></p>
+<h3 id="choosing-the-training-set">Choosing the training set</h3>
+<p>As the adage goes when it comes to the predictive power of a model  garbage in, garbage out. The sheer size of the ANI1 data set meant a subset had to be selected, so farthest point selection (FPS) was used. FPS uses kernels to calculate the distance in chemical space between environments. While in the KRR <script type="math/tex">\zeta = 2</script> kernels were used to refine the data, for FPS <script type="math/tex">\zeta = 1</script> kernels were used.</p>
+
+<p>This was done as it was known that the selection was not majorly degraded and allowed for computational simplification 
+<script type="math/tex">% <![CDATA[
+K_{(1)}(\mathcal{A},\mathcal{B}) &= 	 \sum_{x\in\mathcal{A}}\sum_{y\in\mathcal{B}}K_{(1)}(\mathcal{X}_x,\mathcal{X}_y) =
+\sum_{x\in\mathcal{A}}\sum_{y\in\mathcal{B}}\mathcal{X}_x^{\pmb{T}}\mathcal{X}_y\\ &=
+\bar{\mathcal{X}}_{x\in\mathcal{A}}^{\pmb{T}}\bar{\mathcal{X}}_{y\in\mathcal{B}} = 
+\phi_{\mathcal{A}}^{\pmb{T}}\phi_{\mathcal{B}} %]]></script>
+as calculating kernels became simple dot products of averaged SOAP descriptors.</p>
+
+<p>This was particularly important as the sequential algorithm implemented meant kernels had to be calculated for each point in the selected set and the whole ANI1 set. After a random seed molecule was selected, the next molecule selected for the training set was the one that maximised the distance metric with the selected set. This distance metric was an application of the polarization identity, most commonly seen in the law of cosines:</p>
+
+<script type="math/tex; mode=display">D^2(\mathcal{A},\mathcal{B}) = K(\mathcal{A},\mathcal{A}) + K(\mathcal{B},\mathcal{B}) -2K(\mathcal{A},\mathcal{B}) \\
+= \phi_{\mathcal{A}}^{\pmb{T}}\phi_{\mathcal{A}} -\phi_{\mathcal{B}}^{\pmb{T}}\phi_{\mathcal{B}} -2\phi_{\mathcal{A}}^{\pmb{T}}\phi_{\mathcal{B}}</script>
+
+<p>By selecting molecules that were diverse in their occupation of chemical space, the idea was to increase the quality of the data and therefore outcomes. To accurately compare whether the presence of energetic perturbations aided in predictive power, another subset of ANI1 called mANI was chosen (FPS was also applied to mANI). mANI represented the lowest energy (relaxed) conformers of each molecule in ANI1.</p>
+
+<h3 id="outcomes-and-results">Outcomes and results</h3>
+<p>The outcome of FPS was interesting to quantify. Two metrics stand out, the first being the number of unique isomers in the FPS set. The rate of growth of this number decreased rapidly as can be seen below.</p>
+
+<p><img src="../images/posts/COSMO/unique_isomers.png" alt="Unique Isomer count" /></p>
+
+<p>The second is quantifying by how much molecules in the FPS set were perturbed:</p>
+
+<p><img src="../images/posts/COSMO/ANI_FPS_excitation_PDF.png" alt="Unique Isomer count" /></p>
+
+<p>As can be seen, higher energy conformers were heavily selected for. Remember that selection was blind to the actual energy of the conformers – only the relative position of the atoms (via SOAP) was used.
+Full results for the predictive power are in the aforementioned presentation, but general trends are:</p>
+<ul>
+  <li>The best training set is always the one most similar to the testing set.</li>
+  <li>QM9 is ineffective at predicting energetically perturbed isomers.</li>
+  <li>ANI1 and mANI are highly ineffective at predicting molecules containing Fluorine atoms</li>
+  <li>ANI1 and mANI are generally capable of predicting molecules of size larger than 11 atoms to reasonable accuracy.</li>
+  <li>ANI1 has a tendency to over predict energies. This was particularly true of FPS subsets, which is logical considering they tended to select more perturbed molecules than new isomers.</li>
+</ul>
+
+<h2 id="what-i-learned">What I learned</h2>
+<h3 id="research-expertise-takes-time">Research expertise takes time</h3>
+<p>Having mainly done university subjects where focused study time is far more important than time spent exploring a topic, being rewarded for my curiosity was a welcome surprise.   Quantifying the distribution of energy perturbations of the ANI1 FPS set wasn’t prescribed to me, but was an important step in understanding the underlying why mANI could often outperform it.</p>
+
+<h3 id="write-functions-not-scripts">Write functions, not scripts</h3>
+<p>Over-engineering can certainly cause code writing time to balloon, but writing and documenting in an object orientated way is well worth the trouble. Modifying functions in a library to extend them slightly is far easier than turning a hastily put together script into boilerplate code as you pepper it around your codebase.</p>
+
+<h3 id="black-boxes-can-be-your-friend">Black boxes <em>can</em> be your friend</h3>
+<p>When I read the first paper of the group, I probably understood only 40% of it. This didn’t increase quickly because I spent time trying to unravel every equation and comprehend the paper from start to finish. What changed and lead to a better understanding was having the guidance of Michael and Felix to help me pick the lowest hanging fruit to understand and build my base from there.</p>
+
+<p>To begin, identifying the architecture of the whole process was excellent. By being able to split the process into a series of steps as I did in the diagram above, I began to “know what I didn’t know”. From there, I was able to break down each step and gain an understanding of its internals. KRR was first, as I was able to teach myself it without too much difficultly. As a part of that process I would create flowcharts like the one above and by the end understood the process of “learning” from data using this technique.</p>
+
+<p>Next came SOAP – something much harder to learn. Ultimately however being able to effectively use SOAP and being able to recreate it are two different things. Going through the process of turning a group of atom coordinates into are single (large) vector from start to finish with Michael allowed me to identify the effects of parameters and understand how to use the external library to generate SOAP descriptors. Most importantly it allowed me to identify the limitations of the black box, and prevent making errors that would result in work becoming redundant.</p>
+
+<p>Unfortunately I did not apply this philosophy to all the black boxes in the project, and resulted in missing out on several easy gains. Felix’s regression library utilised a technique that incorporated information from more data into a fixed sized matrix. This allowed more of the training set to be included per matrix inversion, which was the most computationally intensive part of the process. Because I did not appreciate which parameters were most important to the function, I did not utilise it fully and therefore could have included far more of the training set for the same computational cost.</p>
+
+<h3 id="save-all-your-produced-data">Save all your produced data</h3>
+<p>I don’t like having excess data making files harder to visually interpret. This was a habit born from working with spreadsheets, but becomes redundant when working with large dataframes where visual inspection isn’t useful. While clearly labelling data and documenting it is important, the nature of modern programming languages makes accessing data subsets incredibly easy. This habit came back to haunt me after a simple miscommunication.</p>
+
+<p>The residuals between predicted energy from ML models and DFT calculations are expressed in ev/molecule, however confusion between a supervisor and myself meant I thought it was in ev/atom. This meant  for each result in the testing set I erroneously divided the correct result by the number of atoms in the molecule. This error would not have been an issue if each result was recorded with its respective molecule, but in my pursuit of visually clean data I did not do so.</p>
+
+<p>Instead of being able to correct the error by multiplying the ev/atom result by the number of atoms in a molecule, I was left with an incorrect result. To get an estimate of the correct numbers I was able to multiply by the average number of atoms per molecule in the test set, but obtaining accurate results would require rerunning all the simulations again.</p>
+<h3 id="if-youre-engaged-the-hours-dont-matter">If you’re engaged, the hours don’t matter</h3>
+<p>Our group did not have a stringent set of hours – there were a few core hours in the middle of the day when everyone was expected to be in the office, but other than that work was largely self-directed. Because people were engaged with their work, the motivation to do work was intrinsic and ultimately everyone worked more than 40 hours a week by choice. Offering support rather than micromanagement was a highly successful way to manage the team, and also meant that when people were in the office they were actually working. Seeing such a well-formed office culture was has left an impression on me that I hope to one day create around myself. On a personal level, it was encouraging to have a 12 hour day flash by while accomplishing a significant amount, because I was fascinated and immersed in what I was doing.</p>
+
+    </div>
+
+    
+
+  </div>
+
+</article>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <ul class="social">
+  <li><a href="mailto:mail@sebg.io" target="_blank"><i class="icon icon-mail3"></i></a></li>
+  <li><a href="https://www.linkedin.com/in/sebastiangay/" target="_blank"><i class="icon icon-li"></i></a></li>
+  <li><a href="https://github.com/SebGay" target="_blank"><i class="icon icon-gh"></i></a></li>
+</ul>
+
+    <p class="txt-medium-gray">
+    <small>&copy;2020 All rights reserved. Made with <a href="http://jekyllrb.com/" target="_blank">Jekyll</a> using <a href="https://github.com/nandomoreirame/end2end" target="_blank">end2end</a>
+    </p>
+  </div>
+</footer>
+
+
+</body>
+</html>
